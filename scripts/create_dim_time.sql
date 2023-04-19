@@ -1,32 +1,31 @@
 --CREATE dim_time TABLE
 
-IF OBJECT_ID('DBO.dim1_time') IS NOT NULL BEGIN DROP EXTERNAL TABLE DBO.dim1_time;
+IF OBJECT_ID('DBO.dim_time') IS NOT NULL BEGIN DROP EXTERNAL TABLE DBO.dim_time;
 
-END CREATE EXTERNAL TABLE [DBO].[dim1_time] WITH (
+END CREATE EXTERNAL TABLE [DBO].[dim_time] WITH (
 
     LOCATION = 'star_schema/dim_time.csv' ,
     DATA_SOURCE = [udacitycontainer1_udacitystorageaccount1_dfs_core_windows_net],
     FILE_FORMAT = [SynapseDelimitedTextFormat]
 ) AS (
     SELECT
-    PaymentId AS time_id,
-	PaymentDate,
-	DATEPART(DAY,CONVERT(DATE, PaymentDate)) AS DAY,
-	DATEPART(MONTH,CONVERT(DATE, PaymentDate)) AS MONTH,
-	DATEPART(QUARTER,CONVERT(DATE, PaymentDate)) AS QUARTER,
-	DATEPART(YEAR,CONVERT(DATE, PaymentDate)) AS YEAR,
-	DATEPART(DAYOFYEAR,CONVERT(DATE, PaymentDate)) AS DAY_OF_YEAR,
-	DATEPART(WEEKDAY,CONVERT(DATE, PaymentDate)) AS DAY_OF_WEEK
-
+    RiderId AS TimeId,
+	StartAt AS Date,
+	DATEPART(WEEKDAY,CONVERT(DATE, StartAt)) AS DayofWeek,
+	DATEPART(DAY,CONVERT(DATE, StartAt)) AS DayofMonth,
+	DATEPART(WEEK,CONVERT(DATE, StartAt)) AS WeekofYear,
+	DATEPART(QUARTER,CONVERT(DATE, StartAt)) AS Quarter,
+    DATEPART(MONTH,CONVERT(DATE, StartAt)) AS Month,
+	DATEPART(YEAR,CONVERT(DATE, StartAt)) AS Year
 
     FROM 
-        dbo.staging_payment
+        dbo.staging_trip
 
 ) ;
 
 GO
 
-SELECT 10 *
+SELECT *
 
 FROM 
-    [DBO].[fact1_payment]
+    [DBO].[dim_time]

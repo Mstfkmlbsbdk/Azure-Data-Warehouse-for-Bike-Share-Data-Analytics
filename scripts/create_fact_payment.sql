@@ -1,18 +1,18 @@
 -- CREATE fact_payment table
 
-IF OBJECT_ID('DBO.fact1_payment') IS NOT NULL BEGIN DROP EXTERNAL TABLE DBO.fact1_payment;
+IF OBJECT_ID('DBO.fact_payment') IS NOT NULL BEGIN DROP EXTERNAL TABLE DBO.fact_payment;
 
-END CREATE EXTERNAL TABLE [DBO].[fact1_payment] WITH (
+END CREATE EXTERNAL TABLE [DBO].[fact_payment] WITH (
 
     LOCATION = 'star_schema/fact_payment.csv' ,
     DATA_SOURCE = [udacitycontainer1_udacitystorageaccount1_dfs_core_windows_net],
     FILE_FORMAT = [SynapseDelimitedTextFormat]
 ) AS (
     SELECT
-        payment_id,
-	    time_id,
-        rider_id,
-        amount
+        PaymentId,
+	    PaymentDate,
+        Amount,
+        RiderId
 
     FROM 
         dbo.staging_payment
@@ -21,7 +21,7 @@ END CREATE EXTERNAL TABLE [DBO].[fact1_payment] WITH (
 
 GO
 
-SELECT 10 *
+SELECT *
 
 FROM 
-    [DBO].[fact1_payment]
+    [DBO].[fact_payment]

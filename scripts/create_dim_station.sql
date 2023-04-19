@@ -21,7 +21,7 @@ END CREATE EXTERNAL TABLE [DBO].[dim_station] WITH (
 
 GO
 
-SELECT 10 *
+SELECT *
 
 FROM 
     [DBO].[dim_station]

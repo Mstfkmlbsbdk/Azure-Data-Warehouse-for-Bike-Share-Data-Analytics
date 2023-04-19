@@ -25,7 +25,7 @@ END CREATE EXTERNAL TABLE [DBO].[dim_rider] WITH (
 
 GO
 
-SELECT 10 *
+SELECT *
 
 FROM 
     [DBO].[dim_rider]
