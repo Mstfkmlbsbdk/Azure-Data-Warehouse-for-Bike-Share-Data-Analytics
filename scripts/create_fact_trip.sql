@@ -17,7 +17,15 @@ END CREATE EXTERNAL TABLE [DBO].[fact_trip] WITH (
     st.StartStationId,
     st.EndStationId,
 	DATEDIFF(MINUTE, st.StartAt, st.EndedAt) AS Duration,
-	DATEDIFF(YEAR, sr.Birthday, st.StartAt) AS RiderAge
+	(DATEDIFF(year, sr.Birthday,
+    CONVERT(Datetime, SUBSTRING([StartAt], 1, 19),120)) - (
+        CASE WHEN MONTH(sr.Birthday) > MONTH(CONVERT(Datetime, SUBSTRING([StartAt], 1, 19),120))
+        OR MONTH(sr.Birthday) =
+            MONTH(CONVERT(Datetime, SUBSTRING([StartAt], 1, 19),120))
+        AND DAY(sr.Birthday) >
+            DAY(CONVERT(Datetime, SUBSTRING([StartAt], 1, 19),120))
+        THEN 1 ELSE 0 END
+    )) AS RiderAge
 
     FROM 
         dbo.staging_trip AS st

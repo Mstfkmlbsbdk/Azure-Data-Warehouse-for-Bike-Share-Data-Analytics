@@ -1,31 +1,31 @@
---CREATE dim_time TABLE
+--Create dim_time table
 
-IF OBJECT_ID('DBO.dim_time') IS NOT NULL BEGIN DROP EXTERNAL TABLE DBO.dim_time;
+CREATE TABLE dim_time (
+    TimeId int,
+    Date datetime,
+    DayofWeek int,
+    DayofMonth int,
+    WeekofYear int,
+    Quarter int,
+    Month int,
+    Year int
+)
+DECLARE @StartDate DATETIME
+DECLARE @EndDate DATETIME
+SET @StartDate = (SELECT MIN(TRY_CONVERT(datetime, left(StartAt, 19))) FROM staging_trip)
+SET @EndDate = DATEADD(year, 5, (SELECT MAX(TRY_CONVERT(datetime, left(StartAt, 19))) FROM staging_trip))
 
-END CREATE EXTERNAL TABLE [DBO].[dim_time] WITH (
+WHILE @StartDate <= @EndDate
+      BEGIN
+             INSERT INTO [dim_time]
+             SELECT
+                   @StartDate,
+                   DATEPART(WEEKDAY, @StartDate),
+                   DATEPART(DAY, @StartDate),
+                   DATEPART(WEEK, @StartDate),
+                   DATEPART(QUARTER, @StartDate),
+                   DATEPART(MONTH, @StartDate),
+                   DATEPART(YEAR, @StartDate)
 
-    LOCATION = 'star_schema/dim_time.csv' ,
-    DATA_SOURCE = [udacitycontainer1_udacitystorageaccount1_dfs_core_windows_net],
-    FILE_FORMAT = [SynapseDelimitedTextFormat]
-) AS (
-    SELECT
-    RiderId AS TimeId,
-	StartAt AS Date,
-	DATEPART(WEEKDAY,CONVERT(DATE, StartAt)) AS DayofWeek,
-	DATEPART(DAY,CONVERT(DATE, StartAt)) AS DayofMonth,
-	DATEPART(WEEK,CONVERT(DATE, StartAt)) AS WeekofYear,
-	DATEPART(QUARTER,CONVERT(DATE, StartAt)) AS Quarter,
-    DATEPART(MONTH,CONVERT(DATE, StartAt)) AS Month,
-	DATEPART(YEAR,CONVERT(DATE, StartAt)) AS Year
-
-    FROM 
-        dbo.staging_trip
-
-) ;
-
-GO
-
-SELECT *
-
-FROM 
-    [DBO].[dim_time]
+             SET @StartDate = DATEADD(dd, 1, @StartDate)
+      END
